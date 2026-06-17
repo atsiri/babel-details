@@ -99,17 +99,17 @@ if check_password():
     # -------------------------
     st.title("Jejaring Tambang di Bangka Belitung")
     col1, col2 = st.columns(2)
-
-    # --- ADDED: Reset Button ---
-    if st.button("🔄 Reset Map Display"):
-        st.session_state.map_key += 1  # Change the key to force map reload
-        st.rerun()                     # Refresh the app immediately
             
     # -------------------------
     # 3. Top Left: Folium Map
     # -------------------------
     with col1:
         st.subheader("Peta Lokasi Tambang")
+            
+        # --- ADDED: Reset Button ---
+        if st.button("🔄 Reset Map Display"):
+            st.session_state.map_key += 1  # Change the key to force map reload
+            st.rerun()                     # Refresh the app immediately
             
         m = folium.Map(location=[-2.0, 106.0], zoom_start=7, tiles="CartoDB positron")
         
