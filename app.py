@@ -53,8 +53,8 @@ if check_password():
     # -------------------------
     @st.cache_data
     def load_data():
-        df_network = pd.read_csv('network_timah.csv')
-        df_profile = pd.read_csv('profilnet_timah.csv')
+        df_network = pd.read_csv('network.csv')
+        df_profile = pd.read_csv('profilenet.csv')
         df_wiup = pd.read_csv('wiup_babel.csv')
         
         # Pre-process WIUP Geometry from WKT to Geopandas
@@ -144,20 +144,20 @@ if check_password():
                 if 'AKTIF' in status:
                     if komoditas in timah_group:
                         fill_color = '#0D47A1' if is_in_network else '#64B5F6' # Biru
-                        border_color = '#000000' if is_in_network else '#1976D2'
+                        border_color = '#0D47A1' if is_in_network else '#1976D2'
                     elif komoditas in pasir_group:
                         fill_color = '#E65100' if is_in_network else '#FFB74D' # Oranye
-                        border_color = '#000000' if is_in_network else '#F57C00'
+                        border_color = '#E65100' if is_in_network else '#F57C00'
                     elif komoditas in kaolin_group:
                         fill_color = '#004D40' if is_in_network else '#4DB6AC' # Teal / Hijau Tosca
-                        border_color = '#000000' if is_in_network else '#00897B'
+                        border_color = '#004D40' if is_in_network else '#00897B'
                     elif komoditas in granit_zirkon_group:
                         fill_color = '#4A148C' if is_in_network else '#BA68C8' # Ungu
-                        border_color = '#000000' if is_in_network else '#8E24AA'
+                        border_color = '#4A148C' if is_in_network else '#8E24AA'
                     else:
                         # Default untuk komoditas lain (Hijau)
                         fill_color = '#1B5E20' if is_in_network else '#81C784' 
-                        border_color = '#000000' if is_in_network else '#388E3C'
+                        border_color = '#1B5E20' if is_in_network else '#388E3C'
                         
                 elif 'KADALUARSA' in status:
                     # Merah untuk status KADALUARSA
@@ -323,7 +323,8 @@ if check_password():
     with tab2:
         st.write("Detail Jejaring Perusahaan:")
         # Filter profile data based on map selection or sidebar
-        profile_view = df_profile.copy()
+        #profile_view = df_profile.copy()
+        profile_view = df_profile[['NAMA_PERUSAHAAN', 'NAMA', 'JABATAN', 'NOMOR_IDENTITAS', 'NPWP', 'KATEGORI']]
         if clicked_company:
             st.write(f"Detail Jejaring Perusahaan **{clicked_company}**")
             profile_view = profile_view[profile_view['NAMA_PERUSAHAAN'] == clicked_company]
