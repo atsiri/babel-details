@@ -243,7 +243,7 @@ if check_password():
                 position = str(data.get('position', ''))
 
                 if source not in added_nodes:
-                    nodes.append(Node(id=source, label=source, title=source, shape='box', color='#4CAF50', size=25))
+                    nodes.append(Node(id=source, label=source, title=source, shape='box', color='#4CAF50', size=15))
                     added_nodes.add(source)
 
                 if target not in added_nodes:
@@ -252,7 +252,7 @@ if check_password():
                     else:
                         node_shape, node_color = 'dot', '#FF9800' 
                         
-                    nodes.append(Node(id=target, label=target, title=f"{target}\nPosition: {position}", shape=node_shape, color=node_color, size=25))
+                    nodes.append(Node(id=target, label=target, title=f"{target}\nPosition: {position}", shape=node_shape, color=node_color, size=10))
                     added_nodes.add(target)
 
                 edges.append(Edge(source=source, target=target, title=f"{source}\nPosition: {position}"))
