@@ -294,15 +294,14 @@ if check_password():
     tab1, tab2, tab3 = st.tabs(["Data WIUP", "Data Jejaring Perusahaan", "Profil Perusahaan"])
 
     with tab1:
+        st.write("Profil Perusahaan:")
+        profil_mining_view = df_profil_mining[['NAMA_PERUSAHAAN', 'ALAMAT', 'NO_TELP', 'EMAIL', 'NIB', 'NPWP', 'NO_AKTA', 'NO_SK', 
+       'JENIS_PERUSAHAAN', 'STATUS_NIB']].copy()
+        
         if focus_companies:
-            st.write(f"Detail WIUP (Berdasarkan Pilihan Peta/Jejaring/Filter)")
-            wiup_view = filtered_gdf[filtered_gdf['NAMA_PERUSAHAAN'].isin(focus_companies)]
-        else:
-            st.write("Detail WIUP Area")
-            wiup_view = filtered_gdf
-
-        display_gdf = wiup_view.drop(columns=['geometry', 'GEOMETRY'], errors='ignore')
-        st.dataframe(display_gdf, use_container_width=True)
+            profil_mining_view = profil_mining_view[profil_mining_view['NAMA_PERUSAHAAN'].isin(focus_companies)]
+            
+        st.dataframe(profil_mining_view, use_container_width=True)
 
     with tab2:
         st.write("Detail Jejaring Perusahaan:")
@@ -315,11 +314,12 @@ if check_password():
 
     # --- REVISED: New Profil Mining Tab ---
     with tab3:
-        st.write("Profil Perusahaan:")
-        profil_mining_view = df_profil_mining[['NAMA_PERUSAHAAN', 'NIB', 'ALAMAT', 'NO_TELP', 'NPWP',
-       'JENIS_PERUSAHAAN', 'STATUS_NIB']].copy()
-        
         if focus_companies:
-            profil_mining_view = profil_mining_view[profil_mining_view['NAMA_PERUSAHAAN'].isin(focus_companies)]
-            
-        st.dataframe(profil_mining_view, use_container_width=True)
+            st.write(f"Detail WIUP (Berdasarkan Pilihan Peta/Jejaring/Filter)")
+            wiup_view = filtered_gdf[filtered_gdf['NAMA_PERUSAHAAN'].isin(focus_companies)]
+        else:
+            st.write("Detail WIUP Area")
+            wiup_view = filtered_gdf
+
+        display_gdf = wiup_view.drop(columns=['geometry', 'GEOMETRY'], errors='ignore')
+        st.dataframe(display_gdf, use_container_width=True)
