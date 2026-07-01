@@ -49,9 +49,15 @@ if check_password():
     @st.cache_data
     def load_data():
         df_network = pd.read_csv('network.csv')
+        df_network['SOURCE'] = df_network['SOURCE'].astype(str).str.strip().str.upper()
+        df_network['TARGET'] = df_network['TARGET'].astype(str).str.strip().str.upper()
+        df_network['POSITION'] = df_network['POSITION'].astype(str).str.strip().str.upper()
         df_profile = pd.read_csv('profilenet.csv')
         df_profile.loc[df_profile['JABATAN']=='BADAN HUKUM', 'NOMOR_IDENTITAS'] = pd.NA
+        df_profile['NAMA'] = df_profile['NAMA'].astype(str).str.strip().str.upper()
+        df_profile['JABATAN'] = df_profile['JABATAN'].astype(str).str.strip().str.upper()
         df_wiup = pd.read_csv('wiup_babel.csv')
+        df_wiup['SK_IUP'] = df_wiup['SK_IUP'].astype(str).str.strip()
         
         # --- REVISED: Load Profil Mining Data ---
         df_profil_mining = pd.read_csv('profiles.csv')
