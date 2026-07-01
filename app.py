@@ -266,13 +266,18 @@ if check_password():
 
                 if target not in added_nodes:
                     if category == 'PERUSAHAAN':
-                        node_shape, node_color = 'box', '#2196F3'
+                        node_shape, node_color = 'box', '#4CAF50'
+                        #'#2196F3'
+                        total_perusahaan_nodes += 1
+                    elif 'PT ' in str(target).upper() or 'CV ' in str(target).upper() or 'PERSEROAN TERBATAS' in str(target).upper():
+                        node_shape, node_color = 'box', '#4CAF50'
+                        #'#2196F3' # changed shape to box to match company style, but you can revert to 'dot' if preferred
                         total_perusahaan_nodes += 1
                     else:
                         node_shape, node_color = 'dot', '#FF9800' 
                         total_individu_nodes += 1
                         
-                    nodes.append(Node(id=target, label=target, title=f"{target}\nPosition: {position}", shape=node_shape, color=node_color, size=10))
+                    nodes.append(Node(id=target, label=target, title=f"{target}\nPosition: {position}", shape=node_shape, color=node_color, size=5))
                     added_nodes.add(target)
 
                 edges.append(Edge(source=source, target=target, title=f"{source}\nPosition: {position}"))
@@ -282,7 +287,7 @@ if check_password():
         clicked_node = agraph(nodes=nodes, edges=edges, config=config)
         
         if clicked_node:
-            st.success(f"Selected Node from Graph: **{clicked_node}**")
+            st.success(f"Perusahaan yang Dipilih: **{clicked_node}**")
 
     # -------------------------
     # 5. NEW SUMMARY STATISTICS SECTION 
@@ -302,7 +307,7 @@ if check_password():
         st.metric(label="Jumlah Perusahaan dalam Jejaring", value=total_perusahaan_nodes)
 
     with stat_col4:
-        st.metric(label="Jumlah Aktor Terkait", value=total_individu_nodes)
+        st.metric(label="Jumlah Individu Terkait", value=total_individu_nodes)
 
 
     # -------------------------
