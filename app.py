@@ -295,7 +295,7 @@ if check_password():
 
     with tab1:
         st.write("Profil Perusahaan:")
-        profil_mining_view = df_profil_mining[['NAMA_PERUSAHAAN', 'ALAMAT', 'NO_TELP', 'EMAIL', 'NIB', 'NPWP', 'NO_AKTA', 'NO_SK', 
+        profil_mining_view = df_profil_mining[['NAMA_PERUSAHAAN', 'ALAMAT', 'NO_TELP', 'EMAIL', 'NIB', 'NPWP', 'NO_AKTA',
        'JENIS_PERUSAHAAN', 'STATUS_NIB']].copy()
         
         if focus_companies:
