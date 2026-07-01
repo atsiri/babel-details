@@ -224,9 +224,10 @@ if check_password():
 
         nodes_to_draw = set(G.nodes())
 
+        # Logic revised here to include city and commodity filters mapping to companies
         if clicked_company and clicked_company in G.nodes():
             nodes_to_draw = nx.node_connected_component(G, clicked_company)
-        elif selected_company or selected_nama:
+        elif selected_company or selected_nama or selected_city or selected_commodity:
             nodes_to_draw = set()
             nodes_to_check = []
             
@@ -234,6 +235,11 @@ if check_password():
                 nodes_to_check.extend(selected_company)
             if selected_nama:
                 nodes_to_check.extend(selected_nama) 
+                
+            if selected_city or selected_commodity:
+                # Get the unique list of companies currently active on the map
+                map_companies = filtered_gdf['NAMA_PERUSAHAAN'].dropna().unique().tolist()
+                nodes_to_check.extend(map_companies)
                 
             for node in nodes_to_check:
                 if node in G.nodes():
@@ -319,11 +325,14 @@ if check_password():
         focus_companies.update(assoc_comps_profile)
         focus_companies.update(assoc_comps_network)
 
-    if selected_company or selected_nama:
+    if selected_company or selected_nama or selected_city or selected_commodity:
         if selected_company:
             focus_companies.update(selected_company)
         if selected_nama:
             focus_companies.update(companies_from_nama)
+        if selected_city or selected_commodity:
+            map_companies = filtered_gdf['NAMA_PERUSAHAAN'].dropna().unique().tolist()
+            focus_companies.update(map_companies)
 
     # Display 3 Tabs
     tab1, tab2, tab3 = st.tabs(["Profil Perusahaan", "Data Jejaring Perusahaan", "Data WIUP"])
