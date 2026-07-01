@@ -238,10 +238,6 @@ if check_password():
         edges = []
         added_nodes = set()
         
-        # Track counts for Summary Stats
-        total_perusahaan_nodes = 0
-        total_individu_nodes = 0
-        
         for source, target, data in G.edges(data=True):
             if source in nodes_to_draw and target in nodes_to_draw:
                 category = str(data.get('category', 'INDIVIDU')).upper()
@@ -250,15 +246,12 @@ if check_password():
                 if source not in added_nodes:
                     nodes.append(Node(id=source, label=source, title=source, shape='box', color='#4CAF50', size=15))
                     added_nodes.add(source)
-                    total_perusahaan_nodes += 1 # Source is always a Perusahaan
 
                 if target not in added_nodes:
                     if category == 'PERUSAHAAN':
                         node_shape, node_color = 'box', '#2196F3'
-                        total_perusahaan_nodes += 1
                     else:
                         node_shape, node_color = 'dot', '#FF9800' 
-                        total_individu_nodes += 1
                         
                     nodes.append(Node(id=target, label=target, title=f"{target}\nPosition: {position}", shape=node_shape, color=node_color, size=10))
                     added_nodes.add(target)
@@ -271,27 +264,6 @@ if check_password():
         
         if clicked_node:
             st.success(f"Selected Node from Graph: **{clicked_node}**")
-
-    # -------------------------
-    # 5. NEW SUMMARY STATISTICS SECTION 
-    # -------------------------
-    st.markdown("---")
-    stat_col1, stat_col2, stat_col3, stat_col4 = st.columns(4)
-    
-    with stat_col1:
-        unique_companies_map = filtered_gdf['NAMA_PERUSAHAAN'].nunique() if not filtered_gdf.empty else 0
-        st.metric(label="Total Perusahaan", value=unique_companies_map)
-        
-    with stat_col2:
-        total_wiup_map = len(filtered_gdf)
-        st.metric(label="Total Area WIUP", value=total_wiup_map)
-        
-    with stat_col3:
-        st.metric(label="Jumlah Perusahaan dalam Jejaring", value=total_perusahaan_nodes)
-
-    with stat_col4:
-        st.metric(label="Jumlah Aktor Terkait", value=total_individu_nodes)
-
 
     # -------------------------
     # Layout: Bottom Data Tables (REVISED logic for Unified Interactivity)
