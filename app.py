@@ -140,7 +140,7 @@ if check_password():
             st.session_state.map_key += 1
             st.rerun() 
             
-        m = folium.Map(location=[-2.0, 106.0], zoom_start=7, tiles="CartoDB positron")
+        m = folium.Map(location=[-2.0, 106.0], zoom_start=8, tiles="CartoDB positron")
         network_companies = set(df_network['SOURCE'].dropna().unique()) | set(df_network['TARGET'].dropna().unique())
         
         if not filtered_gdf.empty:
