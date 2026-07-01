@@ -260,7 +260,7 @@ if check_password():
                 position = str(data.get('position', ''))
 
                 if source not in added_nodes:
-                    nodes.append(Node(id=source, label=source, title=source, shape='box', color='#4CAF50', size=15))
+                    nodes.append(Node(id=source, label=source, title=source, shape='box', color='#4CAF50', size=20, font={'size': 20}))
                     added_nodes.add(source)
                     total_perusahaan_nodes += 1 # Source is always a Perusahaan
 
@@ -277,7 +277,7 @@ if check_password():
                         node_shape, node_color = 'dot', '#FF9800' 
                         total_individu_nodes += 1
                         
-                    nodes.append(Node(id=target, label=target, title=f"{target}\nPosition: {position}", shape=node_shape, color=node_color, size=5))
+                    nodes.append(Node(id=target, label=target, title=f"{target}\nPosition: {position}", shape=node_shape, color=node_color, size=5, font={'size': 20}))
                     added_nodes.add(target)
 
                 edges.append(Edge(source=source, target=target, title=f"{source}\nPosition: {position}"))
