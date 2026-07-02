@@ -292,7 +292,7 @@ if check_password():
         config = Config(
             width="100%", 
             height=600, 
-            directed=True, 
+            directed=False, 
             physics={
                 "solver": "repulsion",  # Changed the solver
                 "repulsion": {          # Configure the specific solver's settings
