@@ -52,9 +52,9 @@ if check_password():
         df_network['SOURCE'] = df_network['SOURCE'].astype(str).str.strip().str.upper()
         df_network['TARGET'] = df_network['TARGET'].astype(str).str.strip().str.upper()
         df_network['POSITION'] = df_network['POSITION'].astype(str).str.strip().str.upper()
-        df_profile = pd.read_csv('profilenet.csv')
+        df_profile = pd.read_csv('profilenet.csv').drop(columns=['OBJECTID'], errors='ignore')
         df_profile.loc[df_profile['JABATAN']=='BADAN HUKUM', 'NOMOR_IDENTITAS'] = pd.NA
-        df_profile['NAMA'] = df_profile['NAMA'].astype(str).str.strip().str.upper()
+        df_profile['NAMA_PENANGGUNGJAWAB'] = df_profile['NAMA_PENANGGUNGJAWAB'].astype(str).str.strip().str.upper()
         df_profile['JABATAN'] = df_profile['JABATAN'].astype(str).str.strip().str.upper()
         df_wiup = pd.read_csv('wiup_babel.csv')
         df_wiup['SK_IUP'] = df_wiup['SK_IUP'].astype(str).str.strip()
@@ -72,7 +72,7 @@ if check_password():
         df_network['TARGET'] = df_network['TARGET'].astype(str).str.strip().str.upper()
         
         df_profile['NAMA_PERUSAHAAN'] = df_profile['NAMA_PERUSAHAAN'].astype(str).str.strip().str.upper()
-        df_profile['NAMA'] = df_profile['NAMA'].astype(str).str.strip().str.upper()
+        df_profile['NAMA_PENANGGUNGJAWAB'] = df_profile['NAMA_PENANGGUNGJAWAB'].astype(str).str.strip().str.upper()
         df_profile['KATEGORI'] = df_profile['KATEGORI'].astype(str).str.strip().str.upper()
         
         # --- REVISED: Clean Profil Mining Data ---
@@ -92,7 +92,7 @@ if check_password():
     all_companies = sorted(list(set(gdf_wiup['NAMA_PERUSAHAAN'].dropna()) | set(df_network['SOURCE'].dropna())))
     all_cities = sorted(list(gdf_wiup['KABUPATEN'].dropna().unique()))
     all_commodities = sorted(list(gdf_wiup['KOMODITAS'].dropna().unique()))
-    all_individuals = sorted(list(df_profile[df_profile['KATEGORI'] == 'INDIVIDU']['NAMA'].dropna().unique()))
+    all_individuals = sorted(list(df_profile[df_profile['KATEGORI'] == 'INDIVIDU']['NAMA_PENANGGUNGJAWAB'].dropna().unique()))
 
     selected_company = st.sidebar.multiselect("Nama Perusahaan", options=all_companies)
     selected_nama = st.sidebar.multiselect("Nama Individu", options=all_individuals)
@@ -102,7 +102,7 @@ if check_password():
     # Logic to map selected individuals back to their companies
     companies_from_nama = []
     if selected_nama:
-        companies_from_nama = df_profile[df_profile['NAMA'].isin(selected_nama)]['NAMA_PERUSAHAAN'].unique().tolist()
+        companies_from_nama = df_profile[df_profile['NAMA_PENANGGUNGJAWAB'].isin(selected_nama)]['NAMA_PERUSAHAAN'].unique().tolist()
         companies_from_network = df_network[df_network['TARGET'].isin(selected_nama)]['SOURCE'].unique().tolist()
         companies_from_nama = list(set(companies_from_nama + companies_from_network))
 
@@ -164,7 +164,8 @@ if check_password():
                 timah_group = ['TIMAH', 'TIMAH DMP', 'BIJIH TIMAH', 'PASIR TIMAH']
                 pasir_group = ['PASIR KUARSA', 'PASIR URUG', 'PASIR BANGUNAN', 'PASIR PASANG', 'KERIKIL BERPASIR ALAMI (SIRTU)', 'BATU KUARSA']
                 kaolin_group = ['KAOLIN', 'TANAH LIAT']
-                granit_zirkon_group = ['GRANIT', 'ZIRKON']
+                granit_group = ['GRANIT']
+                zirkon_group = ['ZIRKON']
                 
                 if 'AKTIF' in status:
                     if komoditas in timah_group:
@@ -176,9 +177,12 @@ if check_password():
                     elif komoditas in kaolin_group:
                         fill_color = '#004D40' if is_in_network else '#4DB6AC'
                         border_color = '#004D40' if is_in_network else '#00897B'
-                    elif komoditas in granit_zirkon_group:
+                    elif komoditas in granit_group:
                         fill_color = '#4A148C' if is_in_network else '#BA68C8'
                         border_color = '#4A148C' if is_in_network else '#8E24AA'
+                    elif komoditas in zirkon_group:
+                        fill_color = "#684915" if is_in_network else "#AC7118"
+                        border_color = "#684915" if is_in_network else "#AC7118"
                     else:
                         fill_color = '#1B5E20' if is_in_network else '#81C784' 
                         border_color = '#1B5E20' if is_in_network else '#388E3C'
@@ -219,6 +223,7 @@ if check_password():
         st.subheader("Jejaring Perusahaan")
         
         G = nx.Graph() 
+        #G = nx.spring_layout(NxG, gravity=0.1, iterations=50, seed=42)  # Initialize with spring layout for better visualization
         for _, row in df_network.iterrows():
             G.add_edge(row['SOURCE'], row['TARGET'], position=row['POSITION'], category=row['CATEGORY'])
 
@@ -283,11 +288,27 @@ if check_password():
                 edges.append(Edge(source=source, target=target, title=f"{source}\nPosition: {position}"))
                 
         # Generate interactive Graph that returns user clicks
-        config = Config(width="100%", height=600, directed=True, physics=True)
+        #config = Config(width="100%", height=600, directed=True, physics=True)
+        config = Config(
+            width="100%", 
+            height=600, 
+            directed=True, 
+            physics={
+                "solver": "repulsion",  # Changed the solver
+                "repulsion": {          # Configure the specific solver's settings
+                    "gravitationalConstant": -2000,
+                    "centralGravity": 0.1,
+                    "springLength": 95,
+                    "springConstant": 0.04,
+                    "damping": 0.4,
+                    "avoidOverlap": 1   # Prevents overlap
+                }
+            }
+        )
         clicked_node = agraph(nodes=nodes, edges=edges, config=config)
         
         if clicked_node:
-            st.success(f"Perusahaan yang Dipilih: **{clicked_node}**")
+            st.success(f"Node yang Dipilih: **{clicked_node}**")
 
     # -------------------------
     # 5. NEW SUMMARY STATISTICS SECTION 
@@ -354,7 +375,7 @@ if check_password():
 
     with tab2:
         st.write("Detail Jejaring Perusahaan:")
-        profile_view = df_profile[['NAMA_PERUSAHAAN', 'NAMA', 'JABATAN', 'NOMOR_IDENTITAS', 'NPWP', 'KATEGORI']].copy()
+        profile_view = df_profile[['NAMA_PERUSAHAAN', 'NAMA_PENANGGUNGJAWAB', 'JABATAN', 'NOMOR_IDENTITAS', 'NPWP', 'KATEGORI']].copy()
         
         if focus_companies:
             profile_view = profile_view[profile_view['NAMA_PERUSAHAAN'].isin(focus_companies)]
