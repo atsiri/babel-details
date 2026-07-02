@@ -54,7 +54,7 @@ if check_password():
         df_network['POSITION'] = df_network['POSITION'].astype(str).str.strip().str.upper()
         df_profile = pd.read_csv('profilenet.csv').drop(columns=['OBJECTID'], errors='ignore')
         df_profile.loc[df_profile['JABATAN']=='BADAN HUKUM', 'NOMOR_IDENTITAS'] = pd.NA
-        df_profile['NAMA_PENANGGUNGJAWAB'] = df_profile['NAMA_PENANGGUNGJAWAB'].astype(str).str.strip().str.upper()
+        df_profile['NAMA'] = df_profile['NAMA'].astype(str).str.strip().str.upper()
         df_profile['JABATAN'] = df_profile['JABATAN'].astype(str).str.strip().str.upper()
         df_wiup = pd.read_csv('wiup_babel.csv')
         df_wiup['SK_IUP'] = df_wiup['SK_IUP'].astype(str).str.strip()
@@ -72,7 +72,7 @@ if check_password():
         df_network['TARGET'] = df_network['TARGET'].astype(str).str.strip().str.upper()
         
         df_profile['NAMA_PERUSAHAAN'] = df_profile['NAMA_PERUSAHAAN'].astype(str).str.strip().str.upper()
-        df_profile['NAMA_PENANGGUNGJAWAB'] = df_profile['NAMA_PENANGGUNGJAWAB'].astype(str).str.strip().str.upper()
+        df_profile['NAMA'] = df_profile['NAMA'].astype(str).str.strip().str.upper()
         df_profile['KATEGORI'] = df_profile['KATEGORI'].astype(str).str.strip().str.upper()
         
         # --- REVISED: Clean Profil Mining Data ---
@@ -92,7 +92,7 @@ if check_password():
     all_companies = sorted(list(set(gdf_wiup['NAMA_PERUSAHAAN'].dropna()) | set(df_network['SOURCE'].dropna())))
     all_cities = sorted(list(gdf_wiup['KABUPATEN'].dropna().unique()))
     all_commodities = sorted(list(gdf_wiup['KOMODITAS'].dropna().unique()))
-    all_individuals = sorted(list(df_profile[df_profile['KATEGORI'] == 'INDIVIDU']['NAMA_PENANGGUNGJAWAB'].dropna().unique()))
+    all_individuals = sorted(list(df_profile[df_profile['KATEGORI'] == 'INDIVIDU']['NAMA'].dropna().unique()))
 
     selected_company = st.sidebar.multiselect("Nama Perusahaan", options=all_companies)
     selected_nama = st.sidebar.multiselect("Nama Individu", options=all_individuals)
@@ -102,7 +102,7 @@ if check_password():
     # Logic to map selected individuals back to their companies
     companies_from_nama = []
     if selected_nama:
-        companies_from_nama = df_profile[df_profile['NAMA_PENANGGUNGJAWAB'].isin(selected_nama)]['NAMA_PERUSAHAAN'].unique().tolist()
+        companies_from_nama = df_profile[df_profile['NAMA'].isin(selected_nama)]['NAMA_PERUSAHAAN'].unique().tolist()
         companies_from_network = df_network[df_network['TARGET'].isin(selected_nama)]['SOURCE'].unique().tolist()
         companies_from_nama = list(set(companies_from_nama + companies_from_network))
 
@@ -375,7 +375,8 @@ if check_password():
 
     with tab2:
         st.write("Detail Jejaring Perusahaan:")
-        profile_view = df_profile[['NAMA_PERUSAHAAN', 'NAMA_PENANGGUNGJAWAB', 'JABATAN', 'NOMOR_IDENTITAS', 'NPWP', 'KATEGORI']].copy()
+        profile_view = df_profile[['NAMA_PERUSAHAAN', 'NAMA', 'JABATAN', 'NOMOR_IDENTITAS', 'NPWP', 'KATEGORI']].copy()
+        profile_view.rename(columns={'NAMA': 'NAMA_PENANGGUNGJAWAB'}, inplace=True)
         
         if focus_companies:
             profile_view = profile_view[profile_view['NAMA_PERUSAHAAN'].isin(focus_companies)]
